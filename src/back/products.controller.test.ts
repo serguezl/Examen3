@@ -10,31 +10,25 @@ const mockProduct = {
 };
 
 let controller: ProductsController;
-let repoMock: any;
+let repoMock = {
+    read: vi.fn().mockResolvedValue([mockProduct]),
+    readById: vi.fn().mockResolvedValue(mockProduct),
+    create: vi.fn().mockResolvedValue(mockProduct),
+    update: vi.fn().mockResolvedValue(mockProduct),
+    delete: vi.fn().mockResolvedValue(mockProduct),
+};
 let res: Partial<Response>;
-let jsonMock: any;
-let statusMock: any;
+const jsonMock = vi.fn();
+const statusMock = vi.fn().mockReturnValue({ json: jsonMock });
 const next: NextFunction = vi.fn();
 
-beforeEach(() => {
-    repoMock = {
-        read: vi.fn().mockResolvedValue([mockProduct]),
-        readById: vi.fn().mockResolvedValue(mockProduct),
-        create: vi.fn().mockResolvedValue(mockProduct),
-        update: vi.fn().mockResolvedValue(mockProduct),
-        delete: vi.fn().mockResolvedValue(mockProduct),
-    } as unknown as any;
+controller = new ProductsController(repoMock);
 
-    controller = new ProductsController(repoMock);
+res = {
+    json: jsonMock,
+    status: statusMock,
+};
 
-    jsonMock = vi.fn();
-    statusMock = vi.fn().mockReturnValue({ json: jsonMock });
-
-    res = {
-        json: jsonMock,
-        status: statusMock,
-    };
-});
 const fakeError = new Error('Repo error');
 
 describe('ProductsController', () => {
